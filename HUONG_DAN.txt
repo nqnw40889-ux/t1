@@ -1,0 +1,104 @@
+GIÁM SÁT HỎNG HÓC MÁY VỚI AI4I 2020
+
+1. Chạy trên Windows
+
+Giải nén toàn bộ ZIP rồi bấm đúp Chay_Streamlit.bat. Máy cần Python 3.12.
+Nếu bản cũ đang chạy ở cổng 8502, dừng bản cũ bằng Ctrl+C trước khi
+mở bản nâng cấp.
+Lần đầu tệp này tạo .venv và cài thư viện, cần kết nối Internet.
+Khi Terminal báo ứng dụng sẵn sàng, mở http://localhost:8502 bằng
+Chrome hoặc Edge. Giữ Terminal mở trong lúc sử dụng. Nhấn Ctrl+C tại
+Terminal để dừng chương trình.
+
+Nếu muốn chạy trong VS Code, mở đúng thư mục có app.py, chọn
+Terminal > New Terminal và chạy:
+
+  py -3.12 -m venv .venv
+  .\.venv\Scripts\python.exe -m pip install -r requirements.txt
+  .\.venv\Scripts\python.exe -m streamlit run app.py --server.address localhost --server.port 8502
+
+Các lần sau chỉ cần lệnh Streamlit hoặc bấm lại tệp .bat.
+Dự án chạy bằng một tiến trình Streamlit và có sẵn mô hình đã huấn luyện.
+
+2. Kịch bản demo
+
+- Giám sát mô phỏng: Bấm Bắt đầu. Chương trình phát lại các bản ghi test
+  theo UDI và mở ở vị trí gần cảnh báo đầu tiên để demo. Dùng Tạm dừng,
+  Mẫu tiếp theo hoặc Đến cảnh báo tiếp theo. Có thể đổi thông số vẽ biểu
+  đồ, hiện nhãn thật và xem đóng góp của từng biến vào dự đoán.
+  Bản ghi vượt ngưỡng đang hiển thị được tự động lưu vào Bảo trì.
+- Dự đoán: Chọn mẫu hoặc nhập tay. Lưu kết quả gốc làm mốc, sửa một
+  thông số và chạy lại để so sánh. Có thể mở thêm phần ca tương tự,
+  so sánh ba mô hình, thử số đo dao động và tải phiếu kết quả.
+- Dự đoán từ ảnh: Tải một PNG gốc từ AI4I_1500_Phieu_Test.zip hoặc tải
+  hai ảnh mẫu ngay trong web. Chương trình đọc sáu thông số từ các vùng
+  chữ trên phiếu 800 × 460 rồi tự chạy LightGBM. Nếu UDI và cả sáu giá
+  trị khớp tập test, chương trình hiện nhãn thật để đối chiếu.
+  Bộ đọc được thiết kế cho bố cục PNG gốc. Giữ nguyên kích thước ảnh
+  và dùng ảnh gốc để demo. Với JPG/PNG chụp phiếu, ứng dụng có chế độ
+  Tesseract và yêu cầu xác nhận kết quả. Xem README.md để cài Tesseract
+  trên Windows hoặc triển khai trên Streamlit Community Cloud.
+- Dự đoán hàng loạt: Dùng 40 bản ghi mẫu, tải CSV/Excel hoặc dán từ
+  bảng tính. Có thể xem trước, sửa dữ liệu và lọc các
+  dòng vượt ngưỡng, dưới ngưỡng hoặc sai định dạng. Có thể tải toàn bộ
+  kết quả CSV. Bấm Lưu cảnh báo vào lịch sử để chuyển các dòng vượt
+  ngưỡng sang Bảo trì. File mẫu nằm ở data/mau_du_doan.csv.
+- Bảo trì: Chọn một cảnh báo, tạo phiếu kiểm tra, nhập ghi chú và lưu
+  trạng thái Chờ kiểm tra, Đang kiểm tra hoặc Đã xử lý. Có thể tải lịch
+  sử CSV. Mỗi cảnh báo chỉ lập một phiếu.
+- Thử ngưỡng: Kéo thanh trượt để so sánh phát hiện đúng, cảnh báo sai,
+  ca bỏ sót, Precision, Recall và F1 với ngưỡng triển khai. Màn hình
+  này dùng 1.500 mẫu validation và chỉ thay đổi kết quả minh họa.
+- Kết quả kiểm thử: Xem Precision, Recall, F1, Average Precision và
+  ma trận nhầm lẫn. Có bảng sai số theo loại sản phẩm L/M/H và phần
+  so sánh một ca phát hiện đúng với một ca bỏ sót.
+
+Kịch bản báo cáo: Giám sát mô phỏng > Đến cảnh báo tiếp theo > Bảo trì
+> Tạo phiếu kiểm tra > Ghi chú và lưu > Thử ngưỡng.
+
+Ứng dụng tự tạo data/maintenance.sqlite3 khi chạy. Đây là lịch sử và
+phiếu bảo trì trên máy đang chạy Streamlit. Khi chuyển thư mục dự án
+sang máy khác và muốn giữ lịch sử, dừng ứng dụng rồi sao chép tệp này
+vào thư mục data của bản đang dùng.
+
+CSV dùng UTF-8, dấu phẩy phân cột, dấu chấm thập phân. Sao chép đúng các
+tiêu đề từ file mẫu. Sáu cột cần có là Type, Air temperature [K],
+Process temperature [K], Rotational speed [rpm], Torque [Nm],
+Tool wear [min]. Type nhận L, M hoặc H. Tool wear dùng phút tích lũy
+theo định nghĩa dữ liệu. Các cột khác chỉ đi kèm trong bảng kết quả.
+
+3. Cách đọc số liệu
+
+AI4I là dữ liệu tổng hợp. Mỗi dòng là một quan sát điều kiện vận hành,
+và phát lại chỉ mô phỏng luồng dữ liệu. Nhãn Machine failure mô tả tình
+trạng hỏng tại bản ghi. Điểm mô hình dùng để so với ngưỡng, chưa được
+hiệu chuẩn thành xác suất hỏng thực tế.
+
+Có 10.000 mẫu, gồm 339 mẫu hỏng (3,39%). Chia phân tầng theo nhãn
+thành 7.000 train, 1.500 validation và 1.500 test. Chọn cấu hình theo
+Average Precision và chọn ngưỡng theo F1 trên validation. Chỉ sau đó
+mới tính các chỉ số trên test.
+
+LightGBM được chọn giữa cấu hình cơ sở và cấu hình dùng trọng số lớp.
+Bản cơ sở được chọn. Trên test, phát hiện 37/51 mẫu hỏng,
+cảnh báo sai 9 mẫu và bỏ sót 14 mẫu. Precision 80,43%, Recall 72,55%,
+F1 76,29%, Average Precision 79,74%.
+
+data/report.json chứa các chỉ số. data/splits.csv ghi cách chia dữ liệu.
+data/test_results.csv chứa kết quả cho từng mẫu test.
+data/validation_scores.csv chứa điểm của 1.500 mẫu validation.
+data/model.txt chứa mô hình LightGBM ở định dạng văn bản.
+
+4. Huấn luyện lại khi cần
+
+  .\.venv\Scripts\python.exe -m pip install -r requirements-train.txt
+  .\.venv\Scripts\python.exe train.py
+  .\.venv\Scripts\python.exe train_comparison.py
+
+Dừng Streamlit trước khi huấn luyện lại để lần mở sau nạp mô hình mới.
+
+Nguồn dữ liệu: Stefan Matzka, AI4I 2020 Predictive Maintenance Dataset,
+UCI Machine Learning Repository, https://doi.org/10.24432/C5HS5C.
+Giấy phép bộ dữ liệu: CC BY 4.0, https://creativecommons.org/licenses/by/4.0/.
+data/ai4i2020.csv là dữ liệu nguồn. Các bảng phân chia, kết quả và CSV
+mẫu là sản phẩm xử lý từ dữ liệu nguồn.
